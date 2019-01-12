@@ -1,21 +1,53 @@
 package by.shalak;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
- * The problems is:
- * Given with a line separated text file of integers ranging anywhere from Integer.MIN to Integer.MAX of size 1024MB,
- * the program should be able to produce line separated text file which has the sorted content of the input file.
- *
- * Following preconditions:
- * the program should be able to run with a memory constraint of 100MB i.e. the -Xmx100m.
- * the file can have duplicate integers.
- * the text in the file has only integers which are line separated and no other characters.
- *
  * @author Alexey Shalak
  */
 public class Start {
+	private static Path inputDataFile = Paths.get("input_data_file.txt");
+	private static final int INPUT_DATA_FILE_SIZE_MB = 30;
+
 	public static void main(String[] args) {
-		System.out.println("Hello Main!");
+		try {
+			createInputFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	/**
+	 * Creation of line separated text file of integers ranging anywhere from Integer.MIN to Integer.MAX of size 1024MB
+	 */
+	private static void createInputFile() throws IOException {
+		if (Files.notExists(inputDataFile)) {
+			Files.createFile(inputDataFile);
+
+			try (FileWriter writer = new FileWriter(inputDataFile.toFile())) {
+
+				System.out.println("Creation of input_data_file.txt...");
+
+				while (inputDataFile.toFile().length() < Math.pow(1024, 2) * INPUT_DATA_FILE_SIZE_MB) {
+					writer.write(Integer.toString(getRandomInt()));
+					writer.write(System.lineSeparator());
+					writer.flush();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Getting of random int value from Integer.MIN_VALUE to Integer.MAX_VALUE
+	 *
+	 * @return int
+	 */
+	private static int getRandomInt() {
+		return (int) ((long) Integer.MIN_VALUE + Math.random() * ((long) Integer.MAX_VALUE - Integer.MIN_VALUE + 1));
+	}
 }
 

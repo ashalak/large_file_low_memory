@@ -14,7 +14,7 @@ By using "mvn test" from project command line.
 
 ## Information
 
-Memory constraint of 100MB sets in .mvn/jvm.config.
+Memory constraint of 100MB sets in .mvn/jvm.config, for tests in maven-surefire-plugin settings.
 
 ## Author
-Alexey Shalak
+Alexey Shalak 
