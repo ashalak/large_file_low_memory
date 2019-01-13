@@ -25,7 +25,7 @@ public class Start {
 	private static Path inputDataFile = Paths.get("input_data_file.txt");
 	private static Path outputDataFile = Paths.get("output_data_file.txt");
 
-	private static int inputDataFileSize = 10 * 10 * 5; // size of the inputDataFile
+	private static int inputDataFileSize = 1024 * 1024 * 150; // size of the inputDataFile
 	private static int maxMemorySize = (int) Runtime.getRuntime().maxMemory(); // size of the max memory
 	private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10 ;
 
