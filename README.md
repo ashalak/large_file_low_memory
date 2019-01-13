@@ -16,8 +16,8 @@ the program should be able to produce line separated text file which has the sor
 
 ## Run
 
-For run only tests: use "mvn clean test" in command line from project root directory.
-For run program: use "mvn clean package exec:java" in command line from project root directory.
+For run tests: use "mvn clean test" in command line from project root directory.
+For run program: use "mvn clean package exec:java -DskipTests=true" in command line from project root directory.
 
 ## Information
 
