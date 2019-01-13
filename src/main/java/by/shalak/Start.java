@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,8 @@ public class Start {
 
 	private static int inputDataFileSize = 1024 * 1024 * 1; // size of the inputDataFile
 	private static int maxMemorySize = (int) Runtime.getRuntime().maxMemory(); // size of the max memory
-	private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10;
+	//private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10;
+	private static int tempFilesCount = 2;
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("inputDataFileSize - " + inputDataFileSize / 1024 / 1024 + " MB");
@@ -66,17 +68,17 @@ public class Start {
 			int fileCounter = 1;
 			for (int i = 1; i <= tempFilesCount; i++) {
 
-				File file = new File("temp-file-" + fileCounter + ".txt");
-				try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
+				File tempFile = new File("temp_file_" + fileCounter + ".txt");
+				try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempFile))) {
 
 					String line;
-					while ((line = bufferedReader.readLine()) != null && file.length() <= tempFileSize) {
+					while ((line = bufferedReader.readLine()) != null && tempFile.length() <= tempFileSize) {
 						bufferedWriter.write(line);
 						bufferedWriter.write(System.lineSeparator());
 						bufferedWriter.flush();
 					}
 
-					files.add(file);
+					files.add(tempFile);
 					fileCounter++;
 				}
 			}
@@ -114,7 +116,7 @@ public class Start {
 		System.out.println("Creation of output_data_file.txt...");
 
 		List<BufferedReader> bufferedReaders = new ArrayList<>();
-		TreeMap<Integer, BufferedReader> map = new TreeMap<>();
+		Map<Integer, BufferedReader> map = new TreeMap<>();
 
 		try (PrintWriter printWriter = new PrintWriter(new FileWriter(outputDataFile.getFileName().toString()))) {
 			for (File file : sortedTempFiles) {
@@ -125,13 +127,16 @@ public class Start {
 			}
 
 			while (!map.isEmpty()) {
-				Map.Entry<Integer, BufferedReader> nextToGo = map.pollFirstEntry();
+				List<Integer> sortedKeys =  map.entrySet().stream().map(Entry::getKey).sorted().collect(Collectors.toList());
+				int minValue = sortedKeys.get(0);
+				BufferedReader minValueBufferedReader = map.get(minValue);
 
-				printWriter.println(nextToGo.getKey());
+				printWriter.println(minValue);
+				map.remove(minValue);
 
 				String line;
-				if ((line = nextToGo.getValue().readLine()) != null) {
-					map.put(Integer.valueOf(line), nextToGo.getValue());
+				if ((line = minValueBufferedReader.readLine()) != null) {
+					map.put(Integer.valueOf(line), minValueBufferedReader);
 				}
 			}
 
@@ -143,7 +148,7 @@ public class Start {
 			}
 
 			for (File file : sortedTempFiles) {
-				file.delete();
+				//file.delete();
 			}
 		}
 	}
