@@ -24,7 +24,7 @@ public class Start {
 	private static Path inputDataFile = Paths.get("input_data_file.txt");
 	private static Path outputDataFile = Paths.get("output_data_file.txt");
 
-	private static int inputDataFileSize = 1024 * 1024 * 15; // size of the inputDataFile
+	private static int inputDataFileSize = 1024 * 1024 * 1; // size of the inputDataFile
 	private static int maxMemorySize = (int) Runtime.getRuntime().maxMemory(); // size of the max memory
 	private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10;
 
@@ -54,7 +54,7 @@ public class Start {
 	}
 
 	/**
-	 * Split the large file into sorted temp files
+	 * Split the large file into valid for memory temp files
 	 */
 	private static List<File> createTempFiles() throws IOException {
 		List<File> files = new ArrayList<>();
@@ -143,7 +143,7 @@ public class Start {
 			}
 
 			for (File file : sortedTempFiles) {
-				//file.delete();
+				file.delete();
 			}
 		}
 	}

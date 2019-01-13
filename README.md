@@ -1,12 +1,17 @@
 ## Problem description is:
 
-Given with a line separated text file of integers ranging anywhere from Integer.MIN to Integer.MAX of size 1024MB,
+Given with inputDataFile a line separated text file of integers ranging anywhere from Integer.MIN to Integer.MAX of size 1024MB,
 the program should be able to produce line separated text file which has the sorted content of the input file.
 
 ## Following preconditions:
  * the program should be able to run with a memory constraint of 100MB, i.e. the -Xmx100m.
  * the file can have duplicate integers.
  * the text in the file has only integers which are line separated and no other characters.
+
+## Solution
+Step 1. Split the large file into valid for memory temp files.
+Step 2. Sort temp file's data.
+Step 3. Merge sorted temp files into a sorted outputDataFile
 
 ## Run
 
