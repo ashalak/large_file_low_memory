@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -42,6 +43,7 @@ public class StartTest {
 	/**
 	 * If inputDataFile contains duplicate
 	 */
+	@Ignore
 	@Test
 	public void duplicateTest() {
 		System.out.println("Creation of input_data_file.txt...");
