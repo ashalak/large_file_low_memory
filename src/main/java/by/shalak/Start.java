@@ -12,10 +12,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -25,20 +25,24 @@ public class Start {
 	private static Path inputDataFile = Paths.get("input_data_file.txt");
 	private static Path outputDataFile = Paths.get("output_data_file.txt");
 
-	private static int inputDataFileSize = 1024 * 1024 * 1; // size of the inputDataFile
+	private static int inputDataFileSize = 10 * 10 * 5; // size of the inputDataFile
 	private static int maxMemorySize = (int) Runtime.getRuntime().maxMemory(); // size of the max memory
-	//private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10;
-	private static int tempFilesCount = 2;
+	private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10 ;
 
-	public static void main(String[] args) throws IOException {
-		System.out.println("inputDataFileSize - " + inputDataFileSize / 1024 / 1024 + " MB");
-		System.out.println("maxMemorySize - " + maxMemorySize / 1024 / 1024 + " MB");
+	public static void main(String[] args){
+		System.out.println("inputDataFileSize - " + inputDataFileSize);
+		System.out.println("maxMemorySize - " + maxMemorySize);
 		System.out.println("tempFilesCount - " + tempFilesCount);
 
-		createInputDataFile();
-		List<File> tempFiles = createTempFiles();
-		List<File> sortedTempFiles = sortTempFiles(tempFiles);
-		createOutPutDataFile(sortedTempFiles);
+		try {
+			createInputDataFile();
+			List<File> tempFiles = createTempFiles();
+			List<File> sortedTempFiles = sortTempFiles(tempFiles);
+			createOutPutDataFile(sortedTempFiles);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private static void createInputDataFile() throws IOException {
@@ -46,10 +50,11 @@ public class Start {
 			Files.createFile(inputDataFile);
 			System.out.println("Creation of input_data_file.txt...");
 
-			try (PrintWriter printWriter = new PrintWriter(new FileWriter(inputDataFile.getFileName().toString()))) {
+			try (PrintWriter printWriter = new PrintWriter(new FileWriter(inputDataFile.toFile()))) {
 
 				while (inputDataFile.toFile().length() < inputDataFileSize) {
 					printWriter.println((int) ((long) Integer.MIN_VALUE + Math.random() * ((long) Integer.MAX_VALUE - Integer.MIN_VALUE + 1)));
+					printWriter.flush();
 				}
 			}
 		}
@@ -59,7 +64,7 @@ public class Start {
 	 * Split the large file into valid for memory temp files
 	 */
 	private static List<File> createTempFiles() throws IOException {
-		List<File> files = new ArrayList<>();
+		List<File> tempFiles = new ArrayList<>();
 		long tempFileSize = inputDataFile.toFile().length() / tempFilesCount;
 
 		System.out.println("Creation of temp files...");
@@ -69,22 +74,21 @@ public class Start {
 			for (int i = 1; i <= tempFilesCount; i++) {
 
 				File tempFile = new File("temp_file_" + fileCounter + ".txt");
-				try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempFile))) {
+				try (PrintWriter printWriter = new PrintWriter(new FileWriter(tempFile))) {
 
 					String line;
-					while ((line = bufferedReader.readLine()) != null && tempFile.length() <= tempFileSize) {
-						bufferedWriter.write(line);
-						bufferedWriter.write(System.lineSeparator());
-						bufferedWriter.flush();
+					while (tempFile.length() <= tempFileSize && (line = bufferedReader.readLine()) != null) {
+						printWriter.println(line);
+						printWriter.flush();
 					}
 
-					files.add(tempFile);
+					tempFiles.add(tempFile);
 					fileCounter++;
 				}
 			}
 		}
 
-		return files;
+		return tempFiles;
 	}
 
 	/**
@@ -116,26 +120,30 @@ public class Start {
 		System.out.println("Creation of output_data_file.txt...");
 
 		List<BufferedReader> bufferedReaders = new ArrayList<>();
-		Map<Integer, BufferedReader> map = new TreeMap<>();
+		Map<Integer, BufferedReader> map = new HashMap<>();
 
-		try (PrintWriter printWriter = new PrintWriter(new FileWriter(outputDataFile.getFileName().toString()))) {
-			for (File file : sortedTempFiles) {
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-				bufferedReaders.add(bufferedReader);
-				String line = bufferedReader.readLine();
-				map.put(Integer.valueOf(line), bufferedReader);
+		try (PrintWriter printWriter = new PrintWriter(new FileWriter(outputDataFile.toFile()))) {
+			for (File sortedTempFile : sortedTempFiles) {
+				if (sortedTempFile.length() > 0) {
+					BufferedReader bufferedReader = new BufferedReader(new FileReader(sortedTempFile));
+
+					bufferedReaders.add(bufferedReader);
+					map.put(Integer.valueOf(bufferedReader.readLine()), bufferedReader);
+				}
 			}
 
 			while (!map.isEmpty()) {
 				List<Integer> sortedKeys =  map.entrySet().stream().map(Entry::getKey).sorted().collect(Collectors.toList());
+
 				int minValue = sortedKeys.get(0);
 				BufferedReader minValueBufferedReader = map.get(minValue);
-
-				printWriter.println(minValue);
 				map.remove(minValue);
 
-				String line;
-				if ((line = minValueBufferedReader.readLine()) != null) {
+				printWriter.println(minValue);
+				printWriter.flush();
+
+				String line = minValueBufferedReader.readLine();
+				if (line != null) {
 					map.put(Integer.valueOf(line), minValueBufferedReader);
 				}
 			}
@@ -147,10 +155,21 @@ public class Start {
 				}
 			}
 
-			for (File file : sortedTempFiles) {
-				//file.delete();
+			if (sortedTempFiles.size() > 0) {
+				System.out.println("Deleting of temp files...");
+				for (File file : sortedTempFiles) {
+					//file.delete();
+				}
 			}
 		}
+	}
+
+	public static Path getInputDataFile() {
+		return inputDataFile;
+	}
+
+	public static int getInputDataFileSize() {
+		return inputDataFileSize;
 	}
 }
 

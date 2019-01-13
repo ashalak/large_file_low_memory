@@ -9,9 +9,10 @@ the program should be able to produce line separated text file which has the sor
  * the text in the file has only integers which are line separated and no other characters.
 
 ## Solution
-Step 1. Split the large file into valid for memory temp files.
-Step 2. Sort temp file's data.
-Step 3. Merge sorted temp files into a sorted outputDataFile
+* Step 1. Split the large file into valid for memory temp files.
+* Step 2. Sort temp file's data.
+* Step 3. Merge sorted temp files into a sorted outputDataFile.
+* Step 4. Delete temp files.
 
 ## Run
 
