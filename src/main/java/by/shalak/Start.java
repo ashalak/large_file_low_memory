@@ -158,7 +158,7 @@ public class Start {
 			if (sortedTempFiles.size() > 0) {
 				System.out.println("Deleting of temp files...");
 				for (File file : sortedTempFiles) {
-					//file.delete();
+					file.delete();
 				}
 			}
 		}
