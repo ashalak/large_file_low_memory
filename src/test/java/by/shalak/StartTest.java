@@ -43,7 +43,6 @@ public class StartTest {
 	/**
 	 * If inputDataFile contains duplicate
 	 */
-	@Ignore
 	@Test
 	public void duplicateTest() {
 		System.out.println("Creation of input_data_file.txt...");
