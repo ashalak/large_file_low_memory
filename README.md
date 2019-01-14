@@ -18,6 +18,7 @@ Step 4. Delete temp files.
 
 For run only tests: use "mvn clean test" in command line from project root directory.  
 For run tests and program: use "mvn clean package exec:java" in command line from project root directory.
+For run program without tests: use "mvn clean package exec:java -DskipTests=true" in command line from project root directory.
 
 ## Information
 
