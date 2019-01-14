@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
  */
 public class Start {
 
-  private static Path inputDataFile = Paths.get("input_data_file.txt");
-  private static Path outputDataFile = Paths.get("output_data_file.txt");
+  private static Path inputDataFilePath = Paths.get("input_data_file.txt");
+  private static Path outputDataFilePath = Paths.get("output_data_file.txt");
 
-  private static int inputDataFileSize = 1024 * 1024 * 100; // size of the inputDataFile
+  private static int inputDataFileSize = 1024 * 1024 * 1; // size of the inputDataFile
   private static int maxMemorySize = (int) Runtime.getRuntime().maxMemory(); // size of the max memory
   private static int tempFilesCount = (inputDataFileSize / maxMemorySize + 1) * 10;
 
@@ -46,14 +46,17 @@ public class Start {
 
   }
 
+  /**
+   * Create necessary inputDataFile
+   */
   private static void createInputDataFile() throws IOException {
-    if (Files.notExists(inputDataFile)) {
-      Files.createFile(inputDataFile);
+    if (Files.notExists(inputDataFilePath)) {
+      Files.createFile(inputDataFilePath);
       System.out.println("Creation of input_data_file.txt...");
 
-      try (PrintWriter printWriter = new PrintWriter(new FileWriter(inputDataFile.toFile()))) {
+      try (PrintWriter printWriter = new PrintWriter(new FileWriter(inputDataFilePath.toFile()))) {
 
-        while (inputDataFile.toFile().length() < inputDataFileSize) {
+        while (inputDataFilePath.toFile().length() < inputDataFileSize) {
           printWriter.println(
               (int) ((long) Integer.MIN_VALUE + Math.random() * ((long) Integer.MAX_VALUE - Integer.MIN_VALUE + 1)));
           printWriter.flush();
@@ -67,11 +70,11 @@ public class Start {
    */
   private static List<File> createTempFiles() throws IOException {
     List<File> tempFiles = new ArrayList<>();
-    long tempFileSize = inputDataFile.toFile().length() / tempFilesCount;
+    long tempFileSize = inputDataFilePath.toFile().length() / tempFilesCount;
 
     System.out.println("Creation of temp files...");
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputDataFile.toFile()))) {
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputDataFilePath.toFile()))) {
       int fileCounter = 1;
       for (int i = 1; i <= tempFilesCount; i++) {
 
@@ -116,7 +119,8 @@ public class Start {
   }
 
   /**
-   * Merge sorted temp files into a sorted outPutDataFile
+   * Merge sorted temp files into a sorted outputDataFile (reading lines from each temp file into memory and merging
+   * the lines together in sorted order, writing to the final file the smallest line as the algorithm moves along through each temp file)
    */
   private static void createOutPutDataFile(List<File> sortedTempFiles) throws IOException {
     System.out.println("Creation of output_data_file.txt...");
@@ -124,7 +128,7 @@ public class Start {
     List<BufferedReader> bufferedReaders = new ArrayList<>();
     Map<Integer, List<BufferedReader>> map = new HashMap<>();
 
-    try (PrintWriter printWriter = new PrintWriter(new FileWriter(outputDataFile.toFile()))) {
+    try (PrintWriter printWriter = new PrintWriter(new FileWriter(outputDataFilePath.toFile()))) {
       for (File sortedTempFile : sortedTempFiles) {
         if (sortedTempFile.length() > 0) {
           BufferedReader bufferedReader = new BufferedReader(new FileReader(sortedTempFile));
@@ -168,11 +172,15 @@ public class Start {
     }
   }
 
-  public static Path getInputDataFile() {
-    return inputDataFile;
+  static Path getInputDataFilePath() {
+    return inputDataFilePath;
   }
 
-  public static int getInputDataFileSize() {
+  static Path getOutputDataFilePath() {
+    return outputDataFilePath;
+  }
+
+  static int getInputDataFileSize() {
     return inputDataFileSize;
   }
 }

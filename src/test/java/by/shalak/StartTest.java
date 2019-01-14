@@ -3,14 +3,12 @@ package by.shalak;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Unit test for simple Start.
+ * Unit test for Start.
  *
  * @author Alexey Shalak
  */
@@ -32,12 +30,15 @@ public class StartTest {
 	public void sizeEqualityTest() {
 		Start.main(null);
 
-		long inputDataFileSize = Paths.get("input_data_file.txt").toFile().length();
-		long outputDataFileSize = Paths.get("output_data_file.txt").toFile().length();
+		long inputDataFileSize = Start.getInputDataFilePath().toFile().length();
+		long outputDataFileSize = Start.getOutputDataFilePath().toFile().length();
 		System.out.println("inputDataFileSize: " + inputDataFileSize);
 		System.out.println("outputDataFileSize: " + outputDataFileSize);
 
 		assertEquals("inputDataFileSize not equals outputDataFileSize! ", inputDataFileSize, outputDataFileSize);
+
+		Start.getInputDataFilePath().toFile().delete();
+		Start.getOutputDataFilePath().toFile().delete();
 	}
 
 	/**
@@ -47,9 +48,9 @@ public class StartTest {
 	public void duplicateTest() {
 		System.out.println("Creation of input_data_file.txt...");
 
-		try (PrintWriter printWriter = new PrintWriter(new FileWriter(Start.getInputDataFile().toFile()))) {
+		try (PrintWriter printWriter = new PrintWriter(new FileWriter(Start.getInputDataFilePath().toFile()))) {
 
-			while (Start.getInputDataFile().toFile().length() < Start.getInputDataFileSize()) {
+			while (Start.getInputDataFilePath().toFile().length() < Start.getInputDataFileSize()) {
 				printWriter.println(1);
 				printWriter.flush();
 			}
