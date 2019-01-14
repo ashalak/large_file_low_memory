@@ -12,6 +12,8 @@ the program should be able to produce line separated text file which has the sor
 * Step 1. Split the large file into valid for memory temp files.
 * Step 2. Sort temp file's data.
 * Step 3. Merge sorted temp files into a sorted outputDataFile.
+(reading lines from each temp file into memory and merging the lines together in sorted order, 
+writing to the final file the smallest line as the algorithm moves along through each temp file.)
 * Step 4. Delete temp files.
 
 ## Run
